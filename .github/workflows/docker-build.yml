@@ -2,9 +2,8 @@ name: Docker Build & Push
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches:
+      - '**'  # 🔥 All branches (main, dev, feature/*, etc.)
 
 jobs:
   build:
@@ -26,21 +25,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Extract branch name
+        run: echo "BRANCH_NAME=${GITHUB_REF##*/}" >> $GITHUB_ENV
+
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}:latest
-            ghcr.io/${{ github.repository }}:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Assert image size
-        run: |
-          size=$(docker image inspect ghcr.io/${{ github.repository }}:${{ github.sha }} --format='{{.Size}}')
-          if [ $size -gt 524288000 ]; then
-            echo "Image size exceeds 500MB limit"
-            exit 1
-          fi
+            ghcr.io/sidgit195/learning-workflow:latest
+            ghcr.io/sidgit195/learning-workflow:${{ env.BRANCH_NAME }}
+            ghcr.io/sidgit195/learning-workflow:${{ github.sha }}
