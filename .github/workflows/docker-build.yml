@@ -2,9 +2,8 @@ name: Docker Build & Push
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches:
+      - '**'  # 🔥 All branches (main, dev, feature/*, etc.)
 
 jobs:
   build:
@@ -26,6 +25,9 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Extract branch name
+        run: echo "BRANCH_NAME=${GITHUB_REF##*/}" >> $GITHUB_ENV
+
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
@@ -33,4 +35,5 @@ jobs:
           push: true
           tags: |
             ghcr.io/sidgit195/learning-workflow:latest
+            ghcr.io/sidgit195/learning-workflow:${{ env.BRANCH_NAME }}
             ghcr.io/sidgit195/learning-workflow:${{ github.sha }}
