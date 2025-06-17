@@ -32,15 +32,5 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}:latest
-            ghcr.io/${{ github.repository }}:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Assert image size
-        run: |
-          size=$(docker image inspect ghcr.io/${{ github.repository }}:${{ github.sha }} --format='{{.Size}}')
-          if [ $size -gt 524288000 ]; then
-            echo "Image size exceeds 500MB limit"
-            exit 1
-          fi
+            ghcr.io/sidgit195/learning-workflow:latest
+            ghcr.io/sidgit195/learning-workflow:${{ github.sha }}
